@@ -1,7 +1,7 @@
 "use client"
 
 import { useSearchParams, useRouter } from "next/navigation"
-import { useState, useEffect, useRef, useMemo, useCallback } from "react"
+import { useState, useEffect, useRef, useMemo, useCallback, Suspense } from "react"
 import Header from "@/components/Header"
 import Footer from "@/components/Footer"
 import CardList from "@/components/Cardlist"
@@ -50,7 +50,7 @@ interface FooterProps {
   language: SupportedLanguage
 }
 
-export default function ProductPage() {
+function ProductPageContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const title = searchParams.get("title")
@@ -619,5 +619,13 @@ export default function ProductPage() {
       </main>
       <Footer language={language} />
     </div>
+  )
+}
+
+export default function ProductPage() {
+  return (
+    <Suspense>
+      <ProductPageContent />
+    </Suspense>
   )
 }

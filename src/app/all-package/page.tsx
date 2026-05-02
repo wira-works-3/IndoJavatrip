@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Header from "@/components/Header"
 import Footer from "@/components/Footer"
@@ -13,21 +13,9 @@ import allPackageLanguageData from "@/data/language/all-package" // Import data 
 // Define the supported language type
 type SupportedLanguage = "id" | "en" | "ms" | "zh"
 
-// Definisi tipe untuk package
-interface Package {
-  id: string | number
-  title: string
-  rating: number
-  duration: string
-  image: string
-  [key: string]: any // Untuk properti lain yang mungkin ada
-}
-
-// Definisi tipe untuk kategori
-interface Category {
-  category: string
-  packages: Package[]
-}
+type KategoriData = ReturnType<typeof getKategoriByLanguage>
+type Category = KategoriData[number]
+type Package = Category["packages"][number]
 
 // Define the props interface for Header and Footer components
 interface LanguageProps {
@@ -35,7 +23,7 @@ interface LanguageProps {
   setLanguage: (newLanguage: SupportedLanguage) => void
 }
 
-export default function AllPackagesPage() {
+function AllPackagesContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -53,7 +41,7 @@ export default function AllPackagesPage() {
   const langData = allPackageLanguageData[language]
 
   // State untuk data kategori dan kategori yang dipilih
-  const [categoriesData, setCategoriesData] = useState<Category[]>([])
+  const [categoriesData, setCategoriesData] = useState<KategoriData>([])
   const [selectedCategory, setSelectedCategory] = useState<string>("")
 
   // State untuk loading
@@ -229,5 +217,13 @@ export default function AllPackagesPage() {
       {/* Spread the language props to Footer */}
       <Footer {...languageProps} />
     </div>
+  )
+}
+
+export default function AllPackagesPage() {
+  return (
+    <Suspense>
+      <AllPackagesContent />
+    </Suspense>
   )
 }

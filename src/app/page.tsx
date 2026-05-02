@@ -3,13 +3,13 @@ import { useState, useEffect, useRef } from "react"
 import { motion } from "framer-motion" // Import Framer Motion
 import Header from "@/components/Header"
 import Footer from "@/components/Footer"
-import SectionTwo from "./dashboard/section-two/page"
-import HotPackagesSection from "./dashboard/section-three/page"
-import SectionFour from "./dashboard/section-four/page"
-import FiturUnggulan from "./dashboard/section-five/page"
-import SectionSix from "./dashboard/section-six/page"
+import SectionTwo from "./dashboard/section-two/SectionTwo"
+import HotPackagesSection from "./dashboard/section-three/HotPackagesSection"
+import SectionFour from "./dashboard/section-four/SectionFour"
+import FiturUnggulan from "./dashboard/section-five/FiturUnggulan"
+import SectionSix from "./dashboard/section-six/ImageGallery"
 import TestimonialSection from "./dashboard/section-seven/page"
-import ContactPerson from "./dashboard/section-eight/page"
+import ContactPerson from "./dashboard/section-eight/ContactPerson"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import { heroSectionData, type HeroSectionContent } from "@/data/language/heroSectionData"
 
@@ -208,7 +208,7 @@ export default function Home() {
       <SectionFour language={language} />
       <FiturUnggulan language={language} />
       <SectionSix language={language} />
-      <TestimonialSection language={language} />
+      <TestimonialSection />
       <ContactPerson language={language} />
       <Footer language={language} />
     </div>
