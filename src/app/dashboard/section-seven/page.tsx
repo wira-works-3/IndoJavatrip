@@ -1,6 +1,5 @@
 "use client"
 
-import Image from "next/image"
 import type React from "react"
 import { useState, useEffect, useRef } from "react"
 
@@ -9,20 +8,34 @@ interface TestimonialData {
   location: string
   rating: number
   feedback: string
-  avatar: string
+  color: string
 }
 
-// Utility function for conditional class names (replacing the import from @/lib/utils)
+function Avatar({ name, color, size = 48 }: Readonly<{ name: string; color: string; size?: number }>) {
+  const initials = name
+    .split(" ")
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase()
+  return (
+    <div
+      className={`${color} rounded-full flex items-center justify-center text-white font-bold flex-shrink-0`}
+      style={{ width: size, height: size, fontSize: size * 0.35 }}
+    >
+      {initials}
+    </div>
+  )
+}
+
 function cn(...classes: (string | boolean | undefined)[]) {
   return classes.filter(Boolean).join(" ")
 }
 
-// Improved hook to handle both mobile and tablet views
 function useResponsiveView(mobileBreakpoint = 480, tabletBreakpoint = 1024) {
   const [viewType, setViewType] = useState<"desktop" | "tablet" | "mobile">("desktop")
 
   useEffect(() => {
-    // Check if window is defined (browser environment)
     if (typeof window !== "undefined") {
       const checkViewType = () => {
         const width = window.innerWidth
@@ -35,13 +48,8 @@ function useResponsiveView(mobileBreakpoint = 480, tabletBreakpoint = 1024) {
         }
       }
 
-      // Initial check
       checkViewType()
-
-      // Add event listener for window resize
       window.addEventListener("resize", checkViewType)
-
-      // Clean up event listener
       return () => {
         window.removeEventListener("resize", checkViewType)
       }
@@ -66,7 +74,7 @@ const TestimonialSection = () => {
       rating: 5.0,
       feedback:
         "many interesting travel offers, travel packages can be changed according to our wishes, the best travel agent",
-      avatar: "/avatars/avatar-1.png",
+      color: "bg-orange-500",
     },
     {
       name: "Jon Delno",
@@ -74,7 +82,7 @@ const TestimonialSection = () => {
       rating: 5.0,
       feedback:
         "first time traveling on mount bromo and ijen crater, it was very satisfying the first time traveling, and the guide was very friendly and fun",
-      avatar: "/avatars/avatar-2.png",
+      color: "bg-blue-500",
     },
     {
       name: "Faryel Vivaldy",
@@ -82,7 +90,7 @@ const TestimonialSection = () => {
       rating: 5.0,
       feedback:
         "Tripnya seru banget! Semua udah diatur rapi, jadi tinggal santai aja nikmatin perjalanan. Guide-nya ramah, nggak ngabasenin, dan tau banyak spot keren.",
-      avatar: "/avatars/avatar-3.png",
+      color: "bg-green-500",
     },
     {
       name: "Jon Delno",
@@ -90,29 +98,26 @@ const TestimonialSection = () => {
       rating: 5.0,
       feedback:
         "Suka banget sama pelayanannya! Bener-bener bikin liburan jadi lebih santai dan nggak ribet. Next time pasti pakai Indo Javatrip lagi!",
-      avatar: "/avatars/avatar-4.png",
+      color: "bg-purple-500",
     },
     {
       name: "Jon Delno",
       location: "Indonesia",
       rating: 5.0,
       feedback: "guide asik, dan perjalanan super nyaman. Paketnya puas banget sama Indo Javatrip. Worth it!",
-      avatar: "/avatars/avatar-5.png",
+      color: "bg-rose-500",
     },
   ]
 
-  // Auto slide functionality for mobile and tablet
   useEffect(() => {
     if (isSliderView) {
       const interval = setInterval(() => {
         setCurrentSlide((prev) => (prev + 1) % testimonials.length)
-      }, 5000) // Change slide every 5 seconds
-
+      }, 5000)
       return () => clearInterval(interval)
     }
   }, [isSliderView, testimonials.length])
 
-  // Handle touch events for manual sliding
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStart(e.targetTouches[0].clientX)
   }
@@ -123,44 +128,26 @@ const TestimonialSection = () => {
 
   const handleTouchEnd = () => {
     if (!touchStart || !touchEnd) return
-
     const distance = touchStart - touchEnd
-    const isLeftSwipe = distance > 50
-    const isRightSwipe = distance < -50
-
-    if (isLeftSwipe) {
-      // Next slide
+    if (distance > 50) {
       setCurrentSlide((prev) => (prev + 1) % testimonials.length)
-    } else if (isRightSwipe) {
-      // Previous slide
+    } else if (distance < -50) {
       setCurrentSlide((prev) => (prev - 1 + testimonials.length) % testimonials.length)
     }
-
-    // Reset values
     setTouchStart(null)
     setTouchEnd(null)
   }
 
-  const goToSlide = (index: number) => {
-    setCurrentSlide(index)
-  }
+  const goToSlide = (index: number) => setCurrentSlide(index)
+  const goToPrevSlide = () => setCurrentSlide((prev) => (prev - 1 + testimonials.length) % testimonials.length)
+  const goToNextSlide = () => setCurrentSlide((prev) => (prev + 1) % testimonials.length)
 
-  const goToPrevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + testimonials.length) % testimonials.length)
-  }
-
-  const goToNextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % testimonials.length)
-  }
-
-  const renderStars = (rating: number) => {
-    return (
-      <div className="flex items-center">
-        <span className="text-yellow-400 text-xl mr-1">★</span>
-        <span className="font-medium text-black">{rating.toFixed(1)}</span>
-      </div>
-    )
-  }
+  const renderStars = (rating: number) => (
+    <div className="flex items-center">
+      <span className="text-yellow-400 text-xl mr-1">★</span>
+      <span className="font-medium text-black">{rating.toFixed(1)}</span>
+    </div>
+  )
 
   return (
     <section className="py-16 bg-orange-400">
@@ -171,22 +158,15 @@ const TestimonialSection = () => {
           yang Terhormat
         </h2>
 
-        {/* Desktop view - only for large screens */}
+        {/* Desktop view */}
         {viewType === "desktop" && (
           <>
             <div className="grid grid-cols-3 gap-6">
-              {/* First row with 3 testimonials */}
               {testimonials.slice(0, 3).map((testimonial, index) => (
                 <div key={index} className="bg-white rounded-lg p-6 shadow-md">
                   <div className="flex items-center mb-4">
-                    <div className="w-12 h-12 bg-orange-200 rounded-full mr-4 overflow-hidden">
-                      <Image
-                        src={testimonial.avatar || "/placeholder.svg?height=48&width=48"}
-                        alt={testimonial.name}
-                        width={48}
-                        height={48}
-                        className="object-cover"
-                      />
+                    <div className="mr-4">
+                      <Avatar name={testimonial.name} color={testimonial.color} size={48} />
                     </div>
                     <div>
                       <h3 className="font-bold text-black">{testimonial.name}</h3>
@@ -199,19 +179,12 @@ const TestimonialSection = () => {
               ))}
             </div>
 
-            {/* Second row with 2 testimonials */}
             <div className="grid grid-cols-2 gap-6 mt-6 max-w-4xl mx-auto">
               {testimonials.slice(3).map((testimonial, index) => (
                 <div key={index} className="bg-white rounded-lg p-6 shadow-md">
                   <div className="flex items-center mb-4">
-                    <div className="w-12 h-12 bg-orange-200 rounded-full mr-4 overflow-hidden">
-                      <Image
-                        src={testimonial.avatar || "/placeholder.svg?height=48&width=48"}
-                        alt={testimonial.name}
-                        width={48}
-                        height={48}
-                        className="object-cover"
-                      />
+                    <div className="mr-4">
+                      <Avatar name={testimonial.name} color={testimonial.color} size={48} />
                     </div>
                     <div>
                       <h3 className="font-bold text-black">{testimonial.name}</h3>
@@ -244,14 +217,8 @@ const TestimonialSection = () => {
                   <div key={index} className="w-full flex-shrink-0 px-2">
                     <div className="bg-white rounded-lg p-5 shadow-md h-full">
                       <div className="flex items-center mb-4">
-                        <div className="w-14 h-14 bg-orange-200 rounded-full mr-4 overflow-hidden">
-                          <Image
-                            src={testimonial.avatar || "/placeholder.svg?height=56&width=56"}
-                            alt={testimonial.name}
-                            width={56}
-                            height={56}
-                            className="object-cover"
-                          />
+                        <div className="mr-4">
+                          <Avatar name={testimonial.name} color={testimonial.color} size={56} />
                         </div>
                         <div>
                           <h3 className="font-bold text-black">{testimonial.name}</h3>
@@ -266,7 +233,6 @@ const TestimonialSection = () => {
               </div>
             </div>
 
-            {/* Slide indicators */}
             <div className="flex justify-center mt-6 gap-2">
               {testimonials.map((_, index) => (
                 <button
@@ -280,7 +246,7 @@ const TestimonialSection = () => {
                 />
               ))}
             </div>
-            {/* Navigation buttons */}
+
             <div className="flex justify-between absolute top-1/2 left-0 right-0 -translate-y-1/2 px-2">
               <button
                 onClick={goToPrevSlide}
